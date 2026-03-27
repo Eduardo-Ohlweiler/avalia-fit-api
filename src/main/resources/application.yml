@@ -1,0 +1,21 @@
+spring:
+  application:
+    name: avaliafit-api
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/avaliafit
+    username: postgres
+    password: admin
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    open-in-view: false
+    properties:
+      hibernate:
+        format_sql: true
+
+jwt:
+  secret: ${JWT_SECRET}
+  expiration: 86400000
