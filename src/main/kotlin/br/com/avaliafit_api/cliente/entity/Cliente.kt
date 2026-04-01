@@ -1,5 +1,6 @@
 package br.com.avaliafit_api.cliente.entity
 
+import jakarta.persistence.Column
 import jakarta.persistence.Entity
 import jakarta.persistence.GeneratedValue
 import jakarta.persistence.GenerationType
@@ -13,7 +14,9 @@ class Cliente(
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long? = null,
 
+    @Column(length = 100,  nullable = false)
     var nome: String,
 
+    @Column
     var ativo: Boolean = true
 )

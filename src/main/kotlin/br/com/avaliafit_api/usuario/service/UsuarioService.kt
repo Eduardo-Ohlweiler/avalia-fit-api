@@ -1,5 +1,8 @@
 package br.com.avaliafit_api.usuario.service
 
+import br.com.avaliafit_api.cliente.entity.Cliente
+import br.com.avaliafit_api.cliente.repository.ClienteRepository
+import br.com.avaliafit_api.cliente.service.ClienteService
 import br.com.avaliafit_api.config.JwtUtil
 import br.com.avaliafit_api.exceptions.ConflictException
 import br.com.avaliafit_api.exceptions.NotFoundException
@@ -19,7 +22,9 @@ import java.util.Optional
 class UsuarioService(
     private val usuarioRepository:  UsuarioRepository,
     private val usuarioMapper:      UsuarioMapper,
-    private val passwordEncoder:    PasswordEncoder
+    private val passwordEncoder:    PasswordEncoder,
+    private val clienteService:     ClienteService,
+    private val clienteRepository:  ClienteRepository
 ) {
 
     fun findById(id: Long): Usuario {
@@ -45,7 +50,17 @@ class UsuarioService(
     fun create(usuarioCreateDto: UsuarioCreateDto, logado: Boolean = true): UsuarioResponseDto {
 
         if(usuarioRepository.existsByEmail(usuarioCreateDto.email))
-            throw ConflictException("Email já está cadastrado, por favor verifique!")
+            throw ConflictException("Email já está cadastrado, por favor verifique!");
+
+        val cliente: Cliente;
+        if (usuarioCreateDto.clienteId != null && usuarioCreateDto.clienteId > 0) {
+            cliente = this.clienteService.findById(usuarioCreateDto.clienteId);
+        } else {
+            cliente = Cliente(
+                nome  = usuarioCreateDto.nome,
+                ativo = true
+            )
+        }
 
         var role: UsuarioRole   = UsuarioRole.USER;
         val usuarioLogado       = getUsuarioLogado();
@@ -65,6 +80,7 @@ class UsuarioService(
             senha       = passwordEncoder.encode(usuarioCreateDto.senha),
             usuarioRole = role,
             createdAt   = LocalDate.now(),
+            cliente     = cliente
         );
 
         val usuarioSalvo = usuarioRepository.save(usuario);

@@ -1,5 +1,6 @@
 package br.com.avaliafit_api.usuario.dtos
 
+import br.com.avaliafit_api.cliente.entity.Cliente
 import br.com.avaliafit_api.usuario.enums.UsuarioRole
 import com.fasterxml.jackson.annotation.JsonProperty
 import io.swagger.v3.oas.annotations.media.Schema
@@ -42,5 +43,8 @@ data class UsuarioCreateDto (
     val senha: String,
 
     @Schema(description = "Permissão do usuario", example = "ADMIN | USER")
-    val usuarioRole: UsuarioRole? = null
+    val usuarioRole: UsuarioRole? = null,
+
+    @Schema(description = "Id do cliente que contratou o sistema", example = "3")
+    val clienteId: Long? = null
 )
