@@ -1,0 +1,19 @@
+databaseChangeLog:
+  - changeSet:
+      id: 003-create-grupo
+      author: eduardo
+      changes:
+        - createTable:
+            tableName: grupo
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+
+              - column:
+                  name: nome
+                  type: VARCHAR(100)
+                  constraints:
+                    nullable: false

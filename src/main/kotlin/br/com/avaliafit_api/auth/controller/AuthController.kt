@@ -12,9 +12,10 @@ class AuthController(
     private val authService: AuthService
 ) {
 
-    fun create(usuarioCreateDto: UsuarioCreateDto): UsuarioResponseDto {
-        return this.authService.create(usuarioCreateDto);
-    }
+//    fun create(usuarioCreateDto: UsuarioCreateDto): UsuarioResponseDto {
+//        return this.authService.create(usuarioCreateDto);
+//    }
+
 
     fun login(loginDto: LoginDto): LoginResponseDto {
         return this.authService.login(loginDto);
