@@ -99,4 +99,15 @@ class UsuarioService(
         val usuarioId = auth.principal as Long;
         return usuarioRepository.findById(usuarioId);
     }
+
+    fun getUsuarioRole(): UsuarioRole {
+        val usuarioOpt = this.getUsuarioLogado();
+
+        if (usuarioOpt.isPresent) {
+            val usuario = usuarioOpt.get();
+            return usuario.usuarioRole
+        }
+
+        return UsuarioRole.USER
+    }
 }
