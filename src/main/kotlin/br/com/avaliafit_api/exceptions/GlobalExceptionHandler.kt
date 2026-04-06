@@ -12,60 +12,86 @@ import java.util.Date
 class GlobalExceptionHandler {
 
     @ExceptionHandler(ApplicationException::class)
-    fun applicationException(ex: ApplicationException, request: WebRequest): ResponseEntity<ErrorResponse> {
+    fun applicationException(
+        e: ApplicationException,
+        request: WebRequest
+    ): ResponseEntity<Any> {
 
         val errorResponse = ErrorResponse(
-            erro        = ex.message,
-            codigo      = HttpStatus.BAD_REQUEST.value(),
-            timestamp   = Date(),
-            path        = request.getDescription(false)
+            erro = e.message,
+            codigo = HttpStatus.BAD_REQUEST.value(),
+            timestamp = Date(),
+            path = request.getDescription(false)
         )
-        return ResponseEntity(errorResponse, HttpStatus.BAD_REQUEST);
+
+        return ResponseEntity(errorResponse, HttpStatus.BAD_REQUEST)
     }
 
     @ExceptionHandler(MethodArgumentNotValidException::class)
-    fun methodArgumentNotValidException(ex: MethodArgumentNotValidException, request: WebRequest): ResponseEntity<ErrorResponse> {
+    fun methodArgumentNotValidException(
+        e: MethodArgumentNotValidException,
+        request: WebRequest
+    ): ResponseEntity<Any> {
 
-        val erros = ex.fieldErrors.joinToString ("; "){ "${it.field} ${it.defaultMessage}" };
+        val erros = e.fieldErrors.joinToString("") {
+            "${it.field} ${it.defaultMessage}; "
+        }
+
         val errorResponse = ErrorResponse(
-            erro        = erros,
-            codigo      = HttpStatus.BAD_REQUEST.value(),
-            timestamp   = Date(),
-            path        = request.getDescription(false)
+            erro = erros,
+            codigo = HttpStatus.BAD_REQUEST.value(),
+            timestamp = Date(),
+            path = request.getDescription(false)
         )
-        return ResponseEntity(errorResponse, HttpStatus.BAD_REQUEST);
+
+        return ResponseEntity(errorResponse, HttpStatus.BAD_REQUEST)
     }
 
     @ExceptionHandler(NotFoundException::class)
-    fun notFoundException(ex: NotFoundException, request: WebRequest): ResponseEntity<ErrorResponse> {
+    fun notFoundException(
+        e: NotFoundException,
+        request: WebRequest
+    ): ResponseEntity<Any> {
+
         val errorResponse = ErrorResponse(
-            erro        = ex.message,
-            codigo      = HttpStatus.NOT_FOUND.value(),
-            timestamp   = Date(),
-            path        = request.getDescription(false)
+            erro = e.message,
+            codigo = HttpStatus.NOT_FOUND.value(),
+            timestamp = Date(),
+            path = request.getDescription(false)
         )
+
         return ResponseEntity(errorResponse, HttpStatus.NOT_FOUND)
     }
 
     @ExceptionHandler(ConflictException::class)
-    fun conflictException(ex: ConflictException, request: WebRequest): ResponseEntity<ErrorResponse> {
+    fun conflictException(
+        e: ConflictException,
+        request: WebRequest
+    ): ResponseEntity<Any> {
+
         val errorResponse = ErrorResponse(
-            erro        = ex.message,
-            codigo      = HttpStatus.CONFLICT.value(),
-            timestamp   = Date(),
-            path        = request.getDescription(false)
+            erro = e.message,
+            codigo = HttpStatus.CONFLICT.value(),
+            timestamp = Date(),
+            path = request.getDescription(false)
         )
+
         return ResponseEntity(errorResponse, HttpStatus.CONFLICT)
     }
 
     @ExceptionHandler(UnauthorizedException::class)
-    fun unauthorizedException(ex: UnauthorizedException, request: WebRequest): ResponseEntity<ErrorResponse> {
+    fun unauthorizedException(
+        e: UnauthorizedException,
+        request: WebRequest
+    ): ResponseEntity<Any> {
+
         val errorResponse = ErrorResponse(
-            erro        = ex.message,
-            codigo      = HttpStatus.UNAUTHORIZED.value(),
-            timestamp   = Date(),
-            path        = request.getDescription(false)
+            erro = e.message,
+            codigo = HttpStatus.UNAUTHORIZED.value(),
+            timestamp = Date(),
+            path = request.getDescription(false)
         )
+
         return ResponseEntity(errorResponse, HttpStatus.UNAUTHORIZED)
     }
 }

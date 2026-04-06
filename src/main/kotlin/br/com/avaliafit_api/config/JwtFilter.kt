@@ -1,5 +1,6 @@
 package br.com.avaliafit_api.config
 
+import br.com.avaliafit_api.exceptions.UnauthorizedException
 import io.jsonwebtoken.ExpiredJwtException
 import io.jsonwebtoken.JwtException
 import jakarta.servlet.FilterChain
@@ -19,43 +20,47 @@ import java.io.IOException
 @Component
 class JwtFilter(
     private val jwtUtil: JwtUtil
-): OncePerRequestFilter() {
+) : OncePerRequestFilter() {
 
     @Throws(ServletException::class, IOException::class)
     override fun doFilterInternal(
-        request:        HttpServletRequest,
-        response:       HttpServletResponse,
-        filterChain:    FilterChain
+        request: HttpServletRequest,
+        response: HttpServletResponse,
+        filterChain: FilterChain
     ) {
 
-        val header = request.getHeader(HttpHeaders.AUTHORIZATION);
-        if(!header.isNullOrBlank() && header.startsWith("Bearer ")) {
-            val token = header.substring(7);
+        val header = request.getHeader(HttpHeaders.AUTHORIZATION)
+
+        if (!header.isNullOrBlank() && header.startsWith("Bearer ")) {
+            val token = header.substring(7)
 
             try {
-                val id          = jwtUtil.getId(token);
-                val usuarioRole = jwtUtil.getUsuarioRole(token);
+                val id = jwtUtil.getId(token)
+                val roles = jwtUtil.getRoles(token)
 
-                val authorities: List<GrantedAuthority> = listOf(SimpleGrantedAuthority("ROLE_${usuarioRole}"));
-                val auth: Authentication                = UsernamePasswordAuthenticationToken(id, null, authorities);
+                val authorities: List<GrantedAuthority> = roles.map {
+                    SimpleGrantedAuthority("ROLE_$it")
+                }
 
-                SecurityContextHolder.getContext().authentication = auth;
+                if (SecurityContextHolder.getContext().authentication == null) {
+                    val auth: Authentication = UsernamePasswordAuthenticationToken(
+                        id, null, authorities
+                    )
+                    SecurityContextHolder.getContext().authentication = auth
+                }
+
             } catch (e: ExpiredJwtException) {
-                response.status = HttpServletResponse.SC_UNAUTHORIZED;
-                response.writer.write("Token expirado. Faça login novamente");
-                return;
+                SecurityContextHolder.clearContext()
+                throw UnauthorizedException("JWT-001: Token expirado")
             } catch (e: JwtException) {
-                response.status = HttpServletResponse.SC_UNAUTHORIZED
-                response.writer.write("Token inválido.")
-                return;
+                SecurityContextHolder.clearContext()
+                throw UnauthorizedException("JWT-002: Token inválido")
             } catch (e: IllegalArgumentException) {
-
-                response.status = HttpServletResponse.SC_UNAUTHORIZED
-                response.writer.write("Token inválido.")
-                return;
+                SecurityContextHolder.clearContext()
+                throw UnauthorizedException("JWT-002: Token inválido")
             }
         }
 
-        filterChain.doFilter(request, response);
+        filterChain.doFilter(request, response)
     }
 }

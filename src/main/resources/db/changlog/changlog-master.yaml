@@ -1,9 +1,0 @@
-databaseChangeLog:
-  - include:
-      file: db/changelog/001-create-cliente.yaml
-  - include:
-      file: db/changelog/002-create-usuario.yaml
-  - include:
-      file: db/changelog/003-create-grupo.yaml
-  - include:
-      file: db/changelog/004-create-usuario-grupo.yaml
